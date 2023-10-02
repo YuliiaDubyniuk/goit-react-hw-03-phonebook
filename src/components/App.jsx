@@ -16,8 +16,11 @@ export class App extends Component {
   };
 
   componentDidMount() {
-    const savedContacts = JSON.parse(localStorage.getItem('contacts'));
-    this.setState({ contacts: savedContacts });
+    const contactsInStorage = localStorage.getItem('contacts');
+    if (contactsInStorage) {
+      const savedContacts = JSON.parse(contactsInStorage);
+      this.setState({ contacts: savedContacts });
+    }
   }
 
   componentDidUpdate(_, prevState) {
@@ -34,21 +37,25 @@ export class App extends Component {
       number,
     };
 
-    if (this.state.contacts.some(contact => contact.name.toLowerCase() === newContact.name.toLowerCase())) {
+    if (
+      this.state.contacts.some(
+        contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+      )
+    ) {
       alert(`${newContact.name} is already in contacts.`);
       return;
     }
 
     this.setState(({ contacts }) => ({
       contacts: [newContact, ...contacts],
-    }))
+    }));
   };
 
-  changeFilter = (evt) => {
+  changeFilter = evt => {
     this.setState({ filter: evt.target.value });
   };
-   
-  deleteContact = (contactId) => {
+
+  deleteContact = contactId => {
     this.setState(prevState => ({
       contacts: prevState.contacts.filter(contact => contact.id !== contactId),
     }));
@@ -56,7 +63,9 @@ export class App extends Component {
 
   render() {
     const { contacts, filter } = this.state;
-    const filteredContacts = contacts.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase()));
+    const filteredContacts = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
 
     return (
       <div>
@@ -64,7 +73,10 @@ export class App extends Component {
         <Form onSubmit={this.addContact}></Form>
         <h2>Contacts</h2>
         <SearchField value={filter} onChange={this.changeFilter}></SearchField>
-        <Contacts contacts={filteredContacts} deleteContact={this.deleteContact}></Contacts>
+        <Contacts
+          contacts={filteredContacts}
+          deleteContact={this.deleteContact}
+        ></Contacts>
       </div>
     );
   }
